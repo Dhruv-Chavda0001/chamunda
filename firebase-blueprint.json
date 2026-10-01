@@ -1,0 +1,113 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "Fashion apparel product sold by Chamunda Fashion",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "name": { "type": "string", "maxLength": 200 },
+        "name_hi": { "type": "string", "maxLength": 200 },
+        "name_gu": { "type": "string", "maxLength": 200 },
+        "slug": { "type": "string", "maxLength": 250 },
+        "category": { "type": "string", "enum": ["Kurti", "Co-ord", "Western", "Dress", "Other"] },
+        "price": { "type": "number" },
+        "discountPrice": { "type": "number" },
+        "fabric": { "type": "string", "maxLength": 200 },
+        "colours": { "type": "array" },
+        "description": { "type": "string", "maxLength": 2000 },
+        "description_hi": { "type": "string", "maxLength": 2000 },
+        "description_gu": { "type": "string", "maxLength": 2000 },
+        "sizes": { "type": "array" },
+        "images": { "type": "array" },
+        "isVisible": { "type": "boolean" },
+        "isFeatured": { "type": "boolean" },
+        "isNewArrival": { "type": "boolean" },
+        "createdAt": { "type": "string" },
+        "isDemo": { "type": "boolean" }
+      },
+      "required": ["id", "name", "slug", "category", "price", "fabric", "sizes", "images", "isVisible", "createdAt"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Prepaid UPI customer order with manual payment verification",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "orderId": { "type": "string", "maxLength": 64 },
+        "customer": { "type": "object" },
+        "items": { "type": "array" },
+        "subtotal": { "type": "number" },
+        "deliveryCharge": { "type": "number" },
+        "totalAmount": { "type": "number" },
+        "paymentScreenshotUrl": { "type": "string", "maxLength": 1000 },
+        "utrNumber": { "type": "string", "maxLength": 30 },
+        "policyAccepted": { "type": "boolean" },
+        "isSeenByAdmin": { "type": "boolean" },
+        "orderStatus": {
+          "type": "string",
+          "enum": ["Payment Pending", "Payment Received", "Packed", "Shipped", "Delivered", "Cancelled"]
+        },
+        "courierName": { "type": "string", "maxLength": 100 },
+        "trackingNumber": { "type": "string", "maxLength": 100 },
+        "adminNote": { "type": "string", "maxLength": 1000 },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "orderId", "customer", "items", "subtotal", "totalAmount", "paymentScreenshotUrl", "utrNumber", "policyAccepted", "orderStatus", "createdAt"]
+    },
+    "OrderTracking": {
+      "title": "OrderTracking",
+      "description": "Public customer tracking endpoint lookup without sensitive customer PII",
+      "type": "object",
+      "properties": {
+        "orderId": { "type": "string", "maxLength": 64 },
+        "orderStatus": { "type": "string" },
+        "courierName": { "type": "string", "maxLength": 100 },
+        "trackingNumber": { "type": "string", "maxLength": 100 },
+        "phoneLast4": { "type": "string", "maxLength": 4 },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["orderId", "orderStatus", "updatedAt"]
+    },
+    "ShopSettings": {
+      "title": "ShopSettings",
+      "description": "Configuration settings for Chamunda Fashion boutique",
+      "type": "object",
+      "properties": {
+        "upiQrImageUrl": { "type": "string" },
+        "upiId": { "type": "string", "maxLength": 100 },
+        "upiHolderName": { "type": "string", "maxLength": 100 },
+        "shopWhatsapp": { "type": "string", "maxLength": 30 },
+        "shopName": { "type": "string", "maxLength": 100 },
+        "shopEmail": { "type": "string", "maxLength": 100 },
+        "deliveryCharge": { "type": "number" },
+        "freeDeliveryAbove": { "type": "number" },
+        "bannerText": { "type": "string", "maxLength": 300 },
+        "bannerImageUrl": { "type": "string" },
+        "announcementEnabled": { "type": "boolean" },
+        "policyText": { "type": "object" },
+        "sizeChart": { "type": "object" }
+      },
+      "required": ["upiId", "upiHolderName", "shopWhatsapp", "deliveryCharge", "announcementEnabled"]
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Catalog of fashion products"
+    },
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Private orders placed by customers, visible and managed by admin"
+    },
+    "/orderTracking/{trackingId}": {
+      "schema": "OrderTracking",
+      "description": "Safe status tracking documents looked up by order ID and phone"
+    },
+    "/settings/{settingId}": {
+      "schema": "ShopSettings",
+      "description": "Shop settings and payment details"
+    }
+  }
+}

@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --primary: #7B1E3A;
+    --primary-dark: #5e162c;
+    --accent: #C9A24B;
+    --accent-light: #e6c878;
+    --bg-cream: #FFF8F0;
+    --text-dark: #2B2B2B;
+    --whatsapp-green: #25D366;
+  }
+
+  body {
+    font-family: 'Poppins', 'Noto Sans Devanagari', 'Noto Sans Gujarati', sans-serif;
+    background-color: #FFF8F0;
+    color: #2B2B2B;
+  }
+
+  h1, h2, h3, .font-serif-brand {
+    font-family: 'Playfair Display', serif;
+  }
+}
+
+/* Custom scrollbars and utilities */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #FFF8F0;
+}
+::-webkit-scrollbar-thumb {
+  background: #C9A24B;
+  border-radius: 9999px;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printable-slip, #printable-slip * {
+    visibility: visible;
+  }
+  #printable-slip {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}
