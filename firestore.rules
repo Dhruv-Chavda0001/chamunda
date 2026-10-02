@@ -1,10 +1,6 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Default Deny All
-    match /{document=**} {
-      allow read, write: if false;
-    }
 
     function isSignedIn() {
       return request.auth != null;
@@ -26,7 +22,7 @@ service cloud.firestore {
         data.id is string && data.id.size() <= 64 &&
         data.name is string && data.name.size() <= 200 &&
         data.slug is string && data.slug.size() <= 250 &&
-        data.category in ['Kurti', 'Co-ord', 'Western', 'Dress', 'Other'] &&
+        data.category is string && data.category.size() <= 50 &&
         data.price is number && data.price >= 0 &&
         data.fabric is string && data.fabric.size() <= 200 &&
         data.sizes is list && data.sizes.size() <= 20 &&
@@ -51,24 +47,19 @@ service cloud.firestore {
         data.orderStatus in ['Payment Pending', 'Payment Received', 'Packed', 'Shipped', 'Delivered', 'Cancelled'];
     }
 
-    // Products collection: Public catalog, Admin management
     match /products/{productId} {
       allow get: if isValidId(productId) && (resource.data.isVisible == true || isAdmin());
-      allow list: if (resource.data.isVisible == true || isAdmin());
-      allow create: if isAdmin() && isValidId(productId) && isValidProduct(request.resource.data);
-      allow update: if isAdmin() && isValidId(productId) && isValidProduct(request.resource.data);
+      allow list: if resource.data.isVisible == true || isAdmin();
+      allow create, update: if isAdmin() && isValidId(productId) && isValidProduct(request.resource.data);
       allow delete: if isAdmin() && isValidId(productId);
     }
 
-    // Orders collection: Customer can create only; Admin can read and manage
     match /orders/{orderId} {
       allow get, list: if isAdmin();
       allow create: if isValidId(orderId) && isValidOrder(request.resource.data);
-      allow update: if isAdmin() && isValidId(orderId);
-      allow delete: if isAdmin() && isValidId(orderId);
+      allow update, delete: if isAdmin() && isValidId(orderId);
     }
 
-    // Order Tracking collection: Safe customer tracking lookup
     match /orderTracking/{trackingId} {
       allow get: if isValidId(trackingId);
       allow list: if isAdmin();
@@ -76,16 +67,14 @@ service cloud.firestore {
       allow update, delete: if isAdmin() && isValidId(trackingId);
     }
 
-    // Settings collection: Public shop configuration, Admin write
     match /settings/{settingId} {
       allow read: if isValidId(settingId);
       allow write: if isAdmin() && isValidId(settingId);
     }
 
-    // Admins registry collection
     match /admins/{userId} {
       allow read: if isSignedIn() && request.auth.uid == userId;
-      allow write: if false; // System managed or manually set in Firebase console
+      allow write: if false;
     }
   }
 }
